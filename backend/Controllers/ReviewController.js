@@ -70,16 +70,16 @@ const addReview = async (req, res) => {
 // Update your own review
 const updateReview = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { reviewId } = req.params;
     const { rating, comment } = req.body;
     const userId = req.user._id;
 
-    console.log("Update Review Request:", { id, rating, comment, userId });
+    console.log("Update Review Request:", { reviewId, rating, comment, userId });
 
     // Find review by ID
-    const review = await ReviewModel.findById(id);
+    const review = await ReviewModel.findById(reviewId);
     if (!review) {
-      console.log("Review not found:", id);
+      console.log("Review not found:", reviewId);
       return res.status(404).json({
         success: false,
         message: "Review not found",
@@ -140,15 +140,15 @@ const updateReview = async (req, res) => {
 // Delete your own review
 const deleteReview = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { reviewId } = req.params;
     const userId = req.user._id;
 
-    console.log("Delete Review Request:", { id, userId });
+    console.log("Delete Review Request:", { reviewId, userId });
 
     // Find review by ID
-    const review = await ReviewModel.findById(id);
+    const review = await ReviewModel.findById(reviewId);
     if (!review) {
-      console.log("Review not found:", id);
+      console.log("Review not found:", reviewId);
       return res.status(404).json({
         success: false,
         message: "Review not found",
@@ -174,7 +174,7 @@ const deleteReview = async (req, res) => {
     }
 
     const bookId = review.book;
-    await ReviewModel.findByIdAndDelete(id);
+    await ReviewModel.findByIdAndDelete(reviewId);
 
     // Update book's average rating and total reviews
     const remainingReviews = await ReviewModel.find({ book: bookId });
@@ -192,7 +192,7 @@ const deleteReview = async (req, res) => {
       totalReviews: remainingReviews.length,
     });
 
-    console.log("Review deleted successfully:", id);
+    console.log("Review deleted successfully:", reviewId);
 
     res.json({
       success: true,

@@ -12,7 +12,7 @@ router.get("/:id", BookController.getBookById);
 
 // Review routes - these should match the frontend API calls
 router.post("/:bookId/reviews", authMiddleware, ReviewController.addReview);
-router.put("/reviews/:id", authMiddleware, ReviewController.updateReview);
-router.delete("/reviews/:id", authMiddleware, ReviewController.deleteReview);
+router.put("/:bookId/reviews/:reviewId", authMiddleware, ReviewController.updateReview);
+router.delete("/:bookId/reviews/:reviewId", authMiddleware, ReviewController.deleteReview);
 
 module.exports = router;

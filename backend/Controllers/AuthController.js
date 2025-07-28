@@ -57,9 +57,46 @@ const signup = async (req, res) => {
     const userModel = new UserModel({ name, email, password });
     userModel.password = await bcrypt.hash(password, 10);
     await userModel.save();
+    
+    // Generate JWT token for auto-login after signup
+    const jwtToken = jwt.sign(
+      { userId: userModel._id, email: userModel.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+    
     res.status(201).json({
       message: "SignUp Successfully",
       success: true,
+      jwtToken,
+      user: {
+        _id: userModel._id,
+        name: userModel.name,
+        email: userModel.email,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Internal Server Error",
+      success: false,
+    });
+  }
+};
+
+// Get current user profile
+const getProfile = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.user.userId).select('-password');
+    if (!user) {
+      return res.status(404).json({ message: "User not found", success: false });
+    }
+    res.status(200).json({
+      success: true,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -72,4 +109,5 @@ const signup = async (req, res) => {
 module.exports = {
   signup,
   login,
+  getProfile,
 };
